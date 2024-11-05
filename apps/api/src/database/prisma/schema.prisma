@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Draw {
+  id           String      @id @default(cuid())
+  name         String
+  owner        User        @relation(fields: [ownerId], references: [username])
+  ownerId      String
+  status       DrawStatus  @default(OPEN)
+  participants UserDraw[]
+  blacklists   Blacklist[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum DrawStatus {
+  OPEN
+  COMPLETED
+}
+
+model User {
+  username       String @id
+  hashedPassword String
+
+  createdDraws    Draw[]
+  participedDraws UserDraw[]  @relation("Participant")
+  receiver        UserDraw[]  @relation("Receiver")
+  blacklists      Blacklist[] @relation("Blacklister")
+  blacklistedBy   Blacklist[] @relation("Blacklisted")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserDraw {
+  id         Int     @id @default(autoincrement())
+  userId     String
+  drawId     String
+  comment    String?
+  user       User    @relation("Participant", fields: [userId], references: [username])
+  draw       Draw    @relation(fields: [drawId], references: [id])
+  receiver   User?   @relation("Receiver", fields: [receiverId], references: [username])
+  receiverId String?
+
+  @@unique([userId, drawId])
+  @@unique([userId, drawId, receiverId])
+}
+
+model Blacklist {
+  drawId            String
+  userId            String
+  blacklistedUserId String
+
+  draw        Draw @relation(fields: [drawId], references: [id])
+  createdBy   User @relation("Blacklister", fields: [userId], references: [username])
+  blockedUser User @relation("Blacklisted", fields: [blacklistedUserId], references: [username])
+
+  @@unique([drawId, userId, blacklistedUserId])
+}
