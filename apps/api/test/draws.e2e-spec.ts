@@ -9,8 +9,8 @@ import { DrawsModule } from '../src/app/draws/draws.module';
 import { DatabaseModule } from '../src/database/database.module';
 import { AuthModule } from '../src/app/auth/auth.module';
 import { AuthGuard } from '../src/app/auth/auth.guard';
+import { seedTheOffice } from '../src/database/prisma/the-office-x-mas';
 import { execSync } from 'child_process';
-import { seedTheOffice } from '../stubs/the-office-x-mas';
 import { PrismaClient } from '@prisma/client';
 import { DrawOwnerGuard } from '../src/app/draws/draw-owner.guard';
 

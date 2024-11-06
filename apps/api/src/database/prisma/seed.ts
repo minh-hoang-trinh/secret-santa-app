@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { seedTheOffice } from '../../../stubs/the-office-x-mas';
+import { seedTheOffice } from './the-office-x-mas';
 
 const prisma = new PrismaClient();
 export async function main() {
