@@ -1,0 +1,20 @@
+services:
+  pg:
+    container_name: secret-santa-pg
+    image: postgres:17.0
+    restart: always
+    environment:
+      POSTGRES_DB: secret-santa
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+  app:
+    container_name: secret-santa-app
+    build: .
+    restart: always
+    ports:
+      - 3001:3000
+    environment:
+      DATABASE_URL: postgres://root:root@secret-santa-pg:5432/secret-santa
+      JWT_SECRET: ultraviolet-catastrophe
+    depends_on:
+      - pg
